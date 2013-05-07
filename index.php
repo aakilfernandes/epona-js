@@ -43,8 +43,6 @@ if(isset($_GET['_escaped_fragment'])){
 	<script src="assets/js/underscore.js"></script>
 	<script src="assets/js/backbone.js"></script>
 	<script src="assets/js/bootstrap.js"></script>
-	<script src="assets/js/jquery.form.js"></script>
 	<script src="assets/js/epona.js"></script> 
-	<script src="assets/js/phapplejax.js"></script>
 </body>
 </html>
