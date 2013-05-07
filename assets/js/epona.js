@@ -37,13 +37,16 @@ function Epona(){
 				epona.histories.reverse().push(history)
 				epona.histories.reverse();
 				routes[route].apply(epona,args);
-				return history;
+				if(typeof epona.callback=='function'){
+					return epona.callback(history)
+				}else{
+					return history;
+				}
 				break;
 			}
 		}
 	};
 	
-	epona.histories=[]
-	
+	epona.histories=[];
 	return epona;
 }
