@@ -5,6 +5,12 @@ function Epona(){
 			hashparts,
 			paths=epona.paths,
 			routes=epona.routes;
+			
+		if(typeof arguments[0]=='string'){
+			window.location.hash=arguments[0];
+		}else if(typeof arguments[0]=='array'){
+			window.location.hash=arguments[0][0];
+		}
 				
 		if(typeof hash=='array'){
 			hashParts=hash;

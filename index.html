@@ -79,11 +79,27 @@
 	</div>
 	</div>
 	<h3 id="examples">Examples</h3>
-	<div class="btn-group">
-		<a class="btn" href="#modal">#modal</a>
-		<a class="btn" href="#modal/Hello">#modal/Hello</a>
-		<a class="btn" href="#modal/Hello/World">#modal/Hello/World</a>
-		<a class="btn" href="#modal/Hello/World/Goodbye">#modal/Hello/World/Goodbye</a>
+	<div id="examples-holder" style="height:30px;">
+	<div class="btn-group " style="top:20px;z-index:1000;">
+		<a class="btn dropdown-toggle btn-primary" data-toggle="dropdown" href="#">
+	    	Examples
+	    	<span class="caret"></span>
+	  	</a>
+	  	<ul class="dropdown-menu">
+			<li>
+				<a href="#modal">#modal</a>
+			</li>
+			<li>
+				<a href="#modal/Hello">#modal/Hello</a>
+			</li>
+			<li>
+				<a href="#modal/Hello/World">#modal/Hello/World</a>
+			</li>
+			<li>
+				<a href="#modal/Hello/World/Goodbye">#modal/Hello/World/Goodbye</a>
+			</li>
+		</ul>
+	</div>
 	</div>
 	<h3 id="overview">Overview</h3>
 	<p>This is a common pattern of how to use epona/js.</p>
@@ -109,7 +125,8 @@
 	<p>
 		Epona's <code>routes</code> object contains a list of routes and their
 		corresponding functions. The following <code>routes</code> object
-		only contains one <code>route</code>, which accepts up to 3 arguments.
+		contains a <code>route</code> named <code>modal</code>, which accepts up to 3 arguments
+		and a route index.
 	</p>
 	<pre id="pre-routes"></pre>
 	<h3 id="history">History</h3>
@@ -156,73 +173,71 @@
 			,$modal = $('#modal')
 	</script>
 	<script data-pre="pre-overview">
-	//create epona
-	var epona=Epona();
+//create epona
+var epona=Epona();
 		
-	//give epona paths
-	epona.paths={/*...*/}
+//give epona paths
+epona.paths={/*...*/}
 		
-	//give epona routes
-	epona.routes={/*...*/}
+//give epona routes
+epona.routes={/*...*/}
 	
-	//give epona a callback
-	epona.callback=function(history){/*...*/}
+//give epona a callback
+epona.callback=function(history){/*...*/}
 		
-	//call epona
+//call epona
+epona();
+	
+//bind epona to hashchange
+$(window).bind('hashchange',function(){
 	epona();
-	
-	//bind epona to hashchange
-	$(window).bind('hashchange',function(){
-		epona();
-	})
+})
 	</script>
 	<script data-pre="pre-paths">
-	epona.paths = { 
-		"modal":
-			"modal",
-		"modal/:title":
-			"modal",
-		"modal/:title/:body":
-			"modal",
-		"modal/:title/:body/:btn":
-			"modal",
-		"":
-			"index",
-		"index":
-			"index"
-	}
+epona.paths = { 
+	"modal":
+		"modal",
+	"modal/:title":
+		"modal",
+	"modal/:title/:body":
+		"modal",
+	"modal/:title/:body/:btn":
+		"modal",
+	"":
+		"index",
+	"index":
+		"index"
+}
 	</script>
 	<script data-pre="pre-routes">
-	epona.routes = {
-		modal: function(title,body,btn){
-			var title = title ? title : '[title]'
-				,body = body ? body : '[body]'
-				,btn = btn ? btn : '[btn]';
-				
-			$modal.find('#modal-title').text(title);
-			$modal.find('#modal-body').text(body);
-			$modal.find('#modal-btn').text(btn);
-			$modal.modal('show');					
-		},
-		index:function(){
-			window.location.hash='index';
-			if($modal.hasClass('in')){
-				$modal.modal('hide');
-			}
+epona.routes = {
+	modal: function(title,body,btn){
+		var title = title ? title : '[title]'
+			,body = body ? body : '[body]'
+			,btn = btn ? btn : '[btn]';
+			
+		$modal.find('#modal-title').text(title);
+		$modal.find('#modal-body').text(body);
+		$modal.find('#modal-btn').text(btn);
+		$modal.modal('show');					
+	},
+	index:function(){
+		if($modal.hasClass('in')){
+			$modal.modal('hide');
 		}
 	}
-	</script>
+}</script>
 	<script data-pre="pre-callback">
-	epona.callback=function(){
-		$('#epona-histories')
-			.text(JSON.stringify(epona.histories,null,4))
-	}
+epona.callback=function(){
+	$('#epona-histories')
+		.text(JSON.stringify(epona.histories,null,4))
+}
 	</script>
 	<script src="assets/js/jquery.snippet.js"></script>
 	<script>
 	epona();
 	$modal.on('hidden',function(){
-		epona.routes.index();
+		epona('index');
 	})
 	$(function(){
 		$('script').each(function(){
@@ -234,6 +249,33 @@
 			}
 		})
 	})
+	
+	var $examplesHolder = $('#examples-holder')
+		,$examplesButtons = $examplesHolder.find('.btn-group')
+		,$examplesToggle=$examplesButtons.find('.dropdown-toggle');
+	
+	$(window).scroll(function(){
+		$window = $(this),
+		$windowTop=$window.scrollTop()+20,
+		$examplesButtonsTop = $examplesHolder.position().top;
+		
+		if(
+			$examplesButtonsTop<$windowTop
+			&& $examplesButtons.css('position')!='fixed'
+		){
+			$examplesButtons.css('position','fixed');
+			return;
+		}
+		
+		if(
+			$examplesButtonsTop>$windowTop
+			&& $examplesButtons.css('position')!='static'
+		){
+			$examplesButtons.css('position','static');
+			return;
+		}
+	})
+	
 	</script>
 </body>
 </html>
