@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>Epona.js by Karmanetics</title>
+	<title>epona.js by Karmanetics</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	<meta name="description" content="A simple javascript router">
 	<meta name="author" content="Karmanetics">
@@ -68,14 +68,14 @@
 	<div class="well">
 	<h1>epona.js</h1>
 	<p>
-		is a simple javascript router.
+		is a simple javascript router. It is incredibly helpful for single page apps that use url hash routing.
 	 	I wrote epona.js for <a href="http://www.karmanetics.com">Karmanetics</a> because I liked Backbone.js' router API, but didn't want the whole framework.
 		Don't worry, you don't need to know anything about Backbone or any other library or framework because Epona has 0 dependencies.
-		However, in the examples I use jQuery to bind Epona to events, so some knowledge of jQuery would be helpful to follow along.
+		However, in the examples I use jQuery to bind epona to events, so some knowledge of jQuery would be helpful to follow along.
 	</p>
 	<div class="btn-group">
-		<a class="btn">Grab the Code</a>
-		<a class="btn">Visit on Github</a>
+		<a class="btn" href="https://github.com/aakilfernandes/epona-js">get entire project</a>
+		<a class="btn btn-primary" href="https://raw.github.com/aakilfernandes/epona-js/master/assets/js/epona.js">get epona.js</a>
 	</div>
 	</div>
 	<h3 id="examples">Examples</h3>
@@ -86,7 +86,7 @@
 		<a class="btn" href="#modal/Hello/World/Goodbye">#modal/Hello/World/Goodbye</a>
 	</div>
 	<h3 id="overview">Overview</h3>
-	<p>This is a common pattern of how to use epona.</p>
+	<p>This is a common pattern of how to use epona/js.</p>
 	<pre id="pre-overview"></pre>
 	<h3 id="paths">Paths</h3>
 	<p>
@@ -95,6 +95,8 @@
 		when a <code>path</code> is successfully matched.
 		The following <code>paths</code> object shows 4 <code>path</code>s
 		which all result in following a <code>route</code> called <code>modal</code>.
+		There are also 2 <code>path</code>s which result in following a <code>route</code>
+		called <code>modal</code>
 	</p>
 	<pre id="pre-paths"></pre>
 	<p>
@@ -175,7 +177,7 @@
 	})
 	</script>
 	<script data-pre="pre-paths">
-	epona.paths = {
+	epona.paths = { 
 		"modal":
 			"modal",
 		"modal/:title":
@@ -183,16 +185,30 @@
 		"modal/:title/:body":
 			"modal",
 		"modal/:title/:body/:btn":
-			"modal"
+			"modal",
+		"":
+			"index",
+		"index":
+			"index"
 	}
 	</script>
 	<script data-pre="pre-routes">
 	epona.routes = {
 		modal: function(title,body,btn){
+			var title = title ? title : '[title]'
+				,body = body ? body : '[body]'
+				,btn = btn ? btn : '[btn]';
+				
 			$modal.find('#modal-title').text(title);
 			$modal.find('#modal-body').text(body);
 			$modal.find('#modal-btn').text(btn);
 			$modal.modal('show');					
+		},
+		index:function(){
+			window.location.hash='index';
+			if($modal.hasClass('in')){
+				$modal.modal('hide');
+			}
 		}
 	}
 	</script>
@@ -205,8 +221,8 @@
 	<script src="assets/js/jquery.snippet.js"></script>
 	<script>
 	epona();
-	$modal.on('hide',function(){
-		window.location.hash='index';
+	$modal.on('hidden',function(){
+		epona.routes.index();
 	})
 	$(function(){
 		$('script').each(function(){
