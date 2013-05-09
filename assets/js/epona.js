@@ -1,17 +1,24 @@
-function Epona(){
-	epona =  function(hash){
-		var epona = arguments.callee,
-			hash=hash?hash:window.location.hash.split('#').reverse()[0],
+function Epona(syncHash){
+	var epona = this;
+	
+	epona.rideTo =  function(hash){
+		var epona = this,
+			hash=hash.split('#').reverse()[0],
 			hashparts,
 			paths=epona.paths,
 			routes=epona.routes;
-				
+		
+		if(epona.syncHash && window.location.hash.replace('#','')!=hash){
+			window.location.hash=("#"+hash);
+			return; //the hashchange trigger will epona again
+		}
+		
 		if(typeof hash=='array'){
 			hashParts=hash;
 		}else{
 			hashParts=hash.split('/');
 		}
-				
+		
 		for(path in paths){
 			var pathParts = path.split('/'),match=true,args=[];
 			if(pathParts.length!=hashParts.length){continue;};
@@ -45,8 +52,25 @@ function Epona(){
 				break;
 			}
 		}
+		
 	};
 	
 	epona.histories=[];
-	return epona;
+	epona.syncHash=syncHash;
+	
+	if(!syncHash){return epona;}
+	
+	if(typeof jQuery=='function'){
+		$(window).bind('hashchange',function(){
+			epona.rideTo(window.location.hash);
+		})
+		return epona;
+	}	
+	
+	if ("onhashchange" in window) {
+	    window.onhashchange=function(){
+			epona.rideTo(window.location.hash)
+		}
+		return epona;
+	}
 }

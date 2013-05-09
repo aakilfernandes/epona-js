@@ -73,6 +73,9 @@
 		Don't worry, you don't need to know anything about Backbone or any other library or framework because Epona has 0 dependencies.
 		However, in the examples I use jQuery to bind epona to events, so some knowledge of jQuery would be helpful to follow along.
 	</p>
+	<p>
+		I've tested epona.js in IE8, Chrome, and Firefox 20.
+	</p>
 	<div class="btn-group">
 		<a class="btn" href="https://github.com/aakilfernandes/epona-js">get entire project</a>
 		<a class="btn btn-primary" href="https://raw.github.com/aakilfernandes/epona-js/master/assets/js/epona.js">get epona.js</a>
@@ -80,7 +83,7 @@
 	</div>
 	<h3 id="examples">Examples</h3>
 	<div id="examples-holder" style="height:30px;">
-	<div class="btn-group " style="top:20px;z-index:1040;">
+	<div class="btn-group " style="z-index:1040;">
 		<a class="btn dropdown-toggle btn-primary" data-toggle="dropdown" href="#">
 	    	Examples
 	    	<span class="caret"></span>
@@ -104,6 +107,17 @@
 	<h3 id="overview">Overview</h3>
 	<p>This is a common pattern of how to use epona/js.</p>
 	<pre id="pre-overview"></pre>
+	<h3 id="hash-syncing">Hash Syncing</h3>
+	<p>
+		When <code>syncHash</code> is set to <code>true</code>, a few things happen.
+		<ul>
+			<li>Calling <code>epona('example/Of/A/Hash')</code> sets the URL to <code>#example/Of/A/Hash</code></li>
+			<li>Binds epona to a the hashchange event, meaning if a user clicks a link to <code>#example/Of/A/Hash</code>,
+				epona will attempt to interpret <code>example/Of/A/Hash</code> as a <code>path</code>. 
+		</ul>
+		Hash syncing is what makes epona so useful, and I suggest you leave it on.
+	</p>
+	
 	<h3 id="paths">Paths</h3>
 	<p>
 		Epona's <code>paths</code> object contains a list of <code>path</code>s
@@ -173,8 +187,8 @@
 			,$modal = $('#modal')
 	</script>
 	<script data-pre="pre-overview">
-//create epona
-var epona=Epona();
+//create epona (with syncHash=true)
+var epona= new Epona(true);
 		
 //give epona paths
 epona.paths={/*...*/}
@@ -185,14 +199,15 @@ epona.routes={/*...*/}
 //give epona a callback
 epona.callback=function(history){/*...*/}
 		
-//call epona
-epona();
-	
-//bind epona to hashchange
-$(window).bind('hashchange',function(){
-	epona();
+//bind epona to events
+$modal.on('hidden',function(){
+	epona.rideTo('index');
 })
-	</script>
+
+//call epona once the document is fully loaded
+$(function(){
+	epona.rideTo(window.location.hash);
+})</script>
 	<script data-pre="pre-paths">
 epona.paths = { 
 	"modal":
@@ -226,7 +241,8 @@ epona.routes = {
 			$modal.modal('hide');
 		}
 	}
-}</script>
+}
+</script>
 	<script data-pre="pre-callback">
 epona.callback=function(){
 	$('#epona-histories')
@@ -235,16 +251,13 @@ epona.callback=function(){
 	</script>
 	<script src="assets/js/jquery.snippet.js"></script>
 	<script>
-	epona();
-	$modal.on('hidden',function(){
-		epona('index');
-	})
+	
 	$(function(){
 		$('script').each(function(){
 			var script = $(this);
 			if(script.data('pre')!=undefined){
 				$('#'+script.data('pre'))
-					.text(script.html())
+					.text($.trim(script.html()))
 					.snippet('javascript',{style:"bright"});
 			}
 		})
@@ -256,22 +269,26 @@ epona.callback=function(){
 	
 	$(window).scroll(function(){
 		$window = $(this),
-		$windowTop=$window.scrollTop()+20,
+		$windowTop=$window.scrollTop()+60,
 		$examplesButtonsTop = $examplesHolder.position().top;
 		
 		if(
 			$examplesButtonsTop<$windowTop
 			&& $examplesButtons.css('position')!='fixed'
 		){
-			$examplesButtons.css('position','fixed');
+			$examplesButtons
+				.css('position','fixed')
+				.css('top','60px');
 			return;
 		}
 		
 		if(
 			$examplesButtonsTop>$windowTop
-			&& $examplesButtons.css('position')!='static'
+			&& $examplesButtons.css('position')!='relative'
 		){
-			$examplesButtons.css('position','static');
+			$examplesButtons
+				.css('position','relative')
+				.css('top','0px');
 			return;
 		}
 	})
